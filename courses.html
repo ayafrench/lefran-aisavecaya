@@ -14,16 +14,20 @@
         .goog-text-highlight { background: transparent !important; box-shadow: none !important; }
         #google_translate_element { opacity: 0; position: absolute; z-index: -1; width: 0; height: 0; overflow: hidden; }
 
-        nav { background-color: #2c3e50; padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); flex-wrap: wrap; }
+        nav { background-color: #2c3e50; padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); flex-wrap: wrap; gap: 10px; }
         .logo { color: white; font-size: 24px; font-weight: 900; }
-        .nav-links { list-style: none; display: flex; gap: 20px; align-items: center; }
+        .nav-links { list-style: none; display: flex; gap: 15px; align-items: center; flex-wrap: wrap; }
         .nav-links li a { color: white; text-decoration: none; font-size: 18px; transition: 0.3s; padding: 5px 10px; border-radius: 5px; }
         .nav-links li a:hover, .active { background-color: #e74c3c; }
+
+        /* تنسيق زر تسجيل الدخول للإدارة ليكون واضحاً جداً */
+        .admin-login-btn { background: #e74c3c; color: white; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold; border: none; transition: 0.3s; }
+        .admin-login-btn:hover { background: #c0392b; transform: scale(1.05); }
 
         .custom-lang-selector { background-color: #34495e; color: white; border: 1px solid #bdc3c7; padding: 5px 10px; border-radius: 5px; font-size: 16px; cursor: pointer; outline: none; font-weight: bold; }
         
         .header-controls { text-align: center; padding: 30px; background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 30px; }
-        .header-controls select { padding: 12px; font-size: 16px; border-radius: 8px; border: 1px solid #ccc; outline: none; width: 300px; }
+        .header-controls select { padding: 12px; font-size: 16px; border-radius: 8px; border: 1px solid #ccc; outline: none; width: 300px; max-width: 90%; }
         .header-controls button { padding: 12px 25px; background-color: #3498db; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-right: 10px; }
 
         .container { max-width: 1200px; margin: auto; padding: 0 20px; }
@@ -34,7 +38,6 @@
         .video-info { padding: 15px; }
         .video-stats-small { font-size: 13px; color: #777; margin-top: 5px; display: block; }
 
-        /* الشاشة البيضاء المنفصلة للفيديو (Full Page Overlay) */
         .full-page-view { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #ffffff; z-index: 2000; overflow-y: auto; padding-bottom: 50px; }
         .fp-header { background: #2c3e50; color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 2001; }
         .fp-header button { background: #e74c3c; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 16px; }
@@ -43,20 +46,25 @@
         .fp-video-container { position: relative; padding-bottom: 56.25%; height: 0; background: #000; border-radius: 10px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
         .fp-video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
         
-        /* بار الإحصائيات (المشاهدات واللايكات) */
-        .stats-bar { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 10px; border: 1px solid #eee; }
+        .stats-bar { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 10px; border: 1px solid #eee; flex-wrap: wrap; gap: 10px;}
         .stats-bar h2 { font-size: 22px; color: #2c3e50; margin: 0; }
         .metrics { font-size: 18px; font-weight: bold; color: #555; display: flex; gap: 20px; align-items: center; }
         .like-btn { background: #e74c3c; color: white; border: none; padding: 8px 15px; border-radius: 20px; cursor: pointer; font-weight: bold; transition: 0.3s; display: flex; align-items: center; gap: 5px; }
         .like-btn:hover { background: #c0392b; transform: scale(1.05); }
 
-        /* منطقة الأسئلة */
         .questions-area { margin-top: 40px; }
         .single-question { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; border-right: 5px solid #3498db; }
         .single-question h3 { color: #2c3e50; margin-bottom: 15px; }
         .option-btn { display: block; width: 100%; text-align: right; padding: 12px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 8px; background: #f8f9fa; cursor: pointer; font-size: 16px; transition: 0.3s; }
         .option-btn:hover { background: #e2e8f0; }
         .feedback-msg { margin-top: 10px; font-weight: bold; font-size: 16px; text-align: center; }
+
+        /* نافذة الإدارة المنبثقة */
+        .modal { display: none; position: fixed; z-index: 3000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); justify-content: center; align-items: center; }
+        .login-modal-content { background-color: white; padding: 30px; border-radius: 15px; width: 90%; max-width: 400px; text-align: center; position: relative; }
+        .login-close { position: absolute; top: 10px; right: 20px; font-size: 28px; cursor: pointer; color: #aaa; }
+        .login-modal-content input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 8px; outline: none; }
+        .login-modal-content button { width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: bold; color: white; cursor: pointer; margin-top: 10px; background-color: #2c3e50; }
     </style>
 </head>
 <body>
@@ -68,6 +76,8 @@
             <li><a href="about.html">من نحن</a></li>
             <li><a href="contact.html">تواصل معنا</a></li>
             <li><a href="courses.html" class="active">المنصة التعليمية</a></li>
+            <!-- زرار تسجيل الدخول للأدمن واضح جداً -->
+            <li><button class="admin-login-btn" id="openAdminLogin">🔒 دخول الإدارة</button></li>
             <li>
                 <select class="custom-lang-selector" onchange="changeLanguage(this.value)">
                     <option value="ar">العربية</option><option value="fr">Français</option><option value="en">English</option>
@@ -81,15 +91,31 @@
         <select id="gradeSelect">
             <option value="">-- اختر المرحلة الدراسية --</option>
             <option value="4_primary">الصف الرابع الابتدائي</option>
+            <option value="5_primary">الصف الخامس الابتدائي</option>
+            <option value="6_primary">الصف السادس الابتدائي</option>
             <option value="1_prep">الصف الأول الإعدادي</option>
-            <!-- باقي المراحل -->
+            <option value="2_prep">الصف الثاني الإعدادي</option>
+            <option value="3_prep">الصف الثالث الإعدادي</option>
+            <option value="1_sec">الصف الأول الثانوي</option>
+            <option value="2_sec">الصف الثاني الثانوي</option>
+            <option value="3_sec">الصف الثالث الثانوي</option>
         </select>
         <button id="fetchVideosBtn">عرض الدروس</button>
     </div>
 
     <div class="container"><div id="playlistContainer" class="video-grid"></div></div>
 
-    <!-- الشاشة البيضاء المنفصلة (تفتح عند الضغط على أي فيديو) -->
+    <!-- نافذة تسجيل دخول الإدارة -->
+    <div id="adminLoginModal" class="modal">
+        <div class="login-modal-content">
+            <span class="login-close" id="closeAdminLogin">&times;</span>
+            <h2>تسجيل دخول الإدارة</h2>
+            <input type="email" id="adminEmail" placeholder="البريد الإلكتروني">
+            <input type="password" id="adminPassword" placeholder="كلمة المرور">
+            <button id="adminLoginBtn">دخول</button>
+        </div>
+    </div>
+
     <div id="fullPageView" class="full-page-view">
         <div class="fp-header">
             <h2 id="fpTitle">عنوان الدرس</h2>
@@ -108,14 +134,34 @@
                 </div>
             </div>
 
-            <div class="questions-area" id="fpQuestionsArea">
-                <!-- الأسئلة ستظهر هنا ديناميكياً -->
-            </div>
+            <div class="questions-area" id="fpQuestionsArea"></div>
         </div>
     </div>
 
     <script type="module">
-        import { db, collection, getDocs, query, where, doc, updateDoc, increment } from './firebase-config.js';
+        import { auth, db, collection, getDocs, query, where, doc, updateDoc, increment, signInWithEmailAndPassword } from './firebase-config.js';
+
+        // أكواد نافذة الإدارة
+        const adminLoginModal = document.getElementById("adminLoginModal");
+        document.getElementById("openAdminLogin").addEventListener("click", () => {
+            if (auth.currentUser && auth.currentUser.email === "yonisaya123@gmail.com") {
+                window.location.href = "admin.html";
+            } else {
+                adminLoginModal.style.display = "flex";
+            }
+        });
+        document.getElementById("closeAdminLogin").addEventListener("click", () => adminLoginModal.style.display = "none");
+        
+        document.getElementById("adminLoginBtn").addEventListener("click", () => {
+            const email = document.getElementById("adminEmail").value;
+            const pass = document.getElementById("adminPassword").value;
+            signInWithEmailAndPassword(auth, email, pass)
+                .then((cred) => {
+                    if (cred.user.email === "yonisaya123@gmail.com") window.location.href = "admin.html";
+                    else alert("هذا الحساب ليس له صلاحيات الإدارة!");
+                })
+                .catch(() => alert("بيانات الدخول خاطئة!"));
+        });
 
         function getYouTubeId(url) {
             let videoId = "";
@@ -124,7 +170,7 @@
             return videoId;
         }
 
-        let currentVideoId = null; // لتتبع الفيديو المفتوح لللايكات
+        let currentVideoId = null;
 
         document.getElementById("fetchVideosBtn").addEventListener("click", async () => {
             const selectedGrade = document.getElementById("gradeSelect").value;
@@ -159,22 +205,18 @@
                         </div>
                     `;
                     
-                    // عند الضغط على الكارت لفتح الشاشة البيضاء
                     card.addEventListener("click", async () => {
                         currentVideoId = docId;
                         document.getElementById("fpTitle").innerText = data.title;
                         document.getElementById("fpVideoTitleDown").innerText = data.title;
                         document.getElementById("fpVideoPlayer").src = videoId ? `https://www.youtube.com/embed/${videoId}?autoplay=1` : data.url;
                         
-                        // تحديث وعرض المشاهدات فوراً
                         let currentViews = (data.views || 0) + 1;
                         document.getElementById("fpViews").innerText = currentViews;
                         document.getElementById("fpLikes").innerText = data.likes || 0;
                         
-                        // تزويد المشاهدات في الداتابيز
                         await updateDoc(doc(db, "playlists", docId), { views: increment(1) });
 
-                        // رص الأسئلة لو موجودة
                         const qArea = document.getElementById("fpQuestionsArea");
                         qArea.innerHTML = "";
                         if (data.questions && data.questions.length > 0) {
@@ -216,17 +258,16 @@
                         }
                         
                         document.getElementById("fullPageView").style.display = "block";
-                        document.body.style.overflow = "hidden"; // منع سكرول الصفحة الأصلية
+                        document.body.style.overflow = "hidden"; 
                     });
                     container.appendChild(card);
                 });
             } catch (error) { console.error(error); }
         });
 
-        // زر اللايك
         document.getElementById("fpLikeBtn").addEventListener("click", async function() {
             if(!currentVideoId || this.disabled) return;
-            this.disabled = true; // منع الضغط مرتين
+            this.disabled = true; 
             this.style.backgroundColor = "#27ae60";
             this.innerHTML = "✅ تم الإعجاب";
             
@@ -236,7 +277,6 @@
             await updateDoc(doc(db, "playlists", currentVideoId), { likes: increment(1) });
         });
 
-        // إغلاق الشاشة البيضاء
         document.getElementById("closeFpBtn").addEventListener("click", () => {
             document.getElementById("fullPageView").style.display = "none";
             document.getElementById("fpVideoPlayer").src = ""; 
