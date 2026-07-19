@@ -7,65 +7,185 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; font-family: 'Cairo', sans-serif; margin: 0; padding: 0; }
-        body { background: linear-gradient(135deg, #74ebd5 0%, #9face6 100%); height: 100vh; display: flex; align-items: center; justify-content: center; }
-        .login-box { background: rgba(255, 255, 255, 0.95); padding: 40px; border-radius: 20px; box-shadow: 0 15px 25px rgba(0,0,0,0.1); width: 100%; max-width: 450px; text-align: center; }
-        h1 { color: #2c3e50; font-size: 28px; margin-bottom: 10px; }
-        p { color: #7f8c8d; margin-bottom: 30px; }
-        input { width: 100%; padding: 15px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 10px; font-size: 16px; outline: none; transition: 0.3s; }
-        input:focus { border-color: #3498db; box-shadow: 0 0 8px rgba(52, 152, 219, 0.3); }
-        button { width: 100%; padding: 15px; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; color: white; cursor: pointer; transition: 0.3s; margin-bottom: 10px; }
+        body { background-color: #f4f7f6; color: #333; }
+        
+        /* الشريط العلوي (Header) */
+        header { background-color: #2c3e50; color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        header h1 { font-size: 24px; margin: 0; }
+        .login-btn-top { background-color: #e74c3c; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .login-btn-top:hover { background-color: #c0392b; }
+
+        /* منطقة اختيار المرحلة */
+        .hero { text-align: center; padding: 40px 20px; background: linear-gradient(135deg, #74ebd5 0%, #9face6 100%); color: #fff; }
+        .hero select { padding: 12px; font-size: 16px; border-radius: 8px; border: none; width: 80%; max-width: 400px; outline: none; margin-top: 20px; }
+        .hero button { padding: 12px 25px; font-size: 16px; background-color: #2c3e50; color: white; border: none; border-radius: 8px; cursor: pointer; margin-right: 10px; font-weight: bold; }
+        
+        /* شبكة الفيديوهات (الصور المصغرة) */
+        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+        .video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
+        .video-card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1); cursor: pointer; transition: 0.3s; position: relative; }
+        .video-card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.2); }
+        .thumbnail { width: 100%; height: 180px; object-fit: cover; }
+        .play-icon { position: absolute; top: 30%; left: 50%; transform: translate(-50%, -50%); font-size: 50px; color: rgba(255, 255, 255, 0.8); }
+        .video-card:hover .play-icon { color: #e74c3c; }
+        .video-info { padding: 15px; }
+        .video-info h3 { font-size: 16px; color: #2c3e50; margin: 0; }
+
+        /* نافذة تسجيل الدخول (Modal) */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); justify-content: center; align-items: center; }
+        .modal-content { background-color: white; padding: 30px; border-radius: 15px; width: 90%; max-width: 400px; text-align: center; position: relative; }
+        .close { position: absolute; top: 10px; right: 20px; font-size: 28px; cursor: pointer; color: #aaa; }
+        .close:hover { color: red; }
+        .modal input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 8px; }
+        .modal button { width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: bold; color: white; cursor: pointer; margin-top: 10px; }
         .btn-login { background-color: #2c3e50; }
-        .btn-login:hover { background-color: #1a252f; transform: translateY(-2px); }
-        .btn-google { background-color: #e74c3c; }
-        .btn-google:hover { background-color: #c0392b; }
-        .btn-guest { background-color: #27ae60; }
-        .btn-guest:hover { background-color: #2ecc71; }
-        hr { border: 0; height: 1px; background: #eee; margin: 20px 0; }
+
+        /* نافذة مشغل الفيديو (Video Modal) */
+        .video-modal-content { background-color: transparent; width: 90%; max-width: 800px; text-align: center; position: relative; box-shadow: none; }
+        .video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; background: #000; border-radius: 10px; border: 3px solid #fff;}
+        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+        .close-video { position: absolute; top: -40px; right: 0; font-size: 30px; cursor: pointer; color: white; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <div class="login-box">
+    <!-- الشريط العلوي -->
+    <header>
         <h1>🇫🇷 Le Français avec Aya Wael</h1>
-        <p>منصتك الأولى لإتقان اللغة الفرنسية</p>
+        <button class="login-btn-top" id="openLoginModal">تسجيل الدخول للإدارة</button>
+    </header>
 
-        <input type="email" id="email" placeholder="البريد الإلكتروني (للإدارة)">
-        <input type="password" id="password" placeholder="كلمة المرور">
-        <button id="loginBtn" class="btn-login">تسجيل الدخول</button>
+    <!-- منطقة اختيار المرحلة -->
+    <div class="hero">
+        <h2>أهلاً بك في منصتك لتعلم اللغة الفرنسية</h2>
+        <p>اختر مرحلتك الدراسية وابدأ المشاهدة الآن</p>
+        <select id="gradeSelect">
+            <option value="">-- اختر المرحلة الدراسية --</option>
+            <option value="4_primary">الصف الرابع الابتدائي</option>
+            <option value="5_primary">الصف الخامس الابتدائي</option>
+            <option value="6_primary">الصف السادس الابتدائي</option>
+            <option value="1_prep">الصف الأول الإعدادي</option>
+            <option value="2_prep">الصف الثاني الإعدادي</option>
+            <option value="3_prep">الصف الثالث الإعدادي</option>
+            <option value="1_sec">الصف الأول الثانوي</option>
+            <option value="2_sec">الصف الثاني الثانوي</option>
+            <option value="3_sec">الصف الثالث الثانوي</option>
+        </select>
+        <button id="fetchVideosBtn">عرض الدروس</button>
+    </div>
 
-        <hr>
-        
-        <button id="googleBtn" class="btn-google">التسجيل باستخدام Google (للطلاب)</button>
-        <button id="guestBtn" class="btn-guest">الدخول كزائر للمشاهدة</button>
+    <!-- شبكة عرض الفيديوهات -->
+    <div class="container">
+        <div id="playlistContainer" class="video-grid">
+            <!-- الفيديوهات ستظهر هنا -->
+        </div>
+    </div>
+
+    <!-- نافذة تسجيل الدخول (مخفية) -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeLoginModal">&times;</span>
+            <h2>تسجيل الدخول</h2>
+            <p>خاص بإدارة المنصة</p>
+            <input type="email" id="email" placeholder="البريد الإلكتروني">
+            <input type="password" id="password" placeholder="كلمة المرور">
+            <button id="loginBtn" class="btn-login">دخول</button>
+        </div>
+    </div>
+
+    <!-- نافذة مشغل الفيديو (مخفية) -->
+    <div id="videoModal" class="modal">
+        <div class="video-modal-content">
+            <span class="close-video" id="closeVideoModal">&times;</span>
+            <div class="video-container">
+                <iframe id="videoPlayer" src="" allowfullscreen></iframe>
+            </div>
+        </div>
     </div>
 
     <script type="module">
-        import { auth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signInAnonymously } from './firebase-config.js';
+        import { auth, db, collection, getDocs, query, where, signInWithEmailAndPassword } from './firebase-config.js';
 
-        // توجيه المستخدم حسب نوع الحساب
-        function redirectUser(user) {
-            if (user.email === "yonisaya123@gmail.com") {
-                window.location.href = "admin.html"; // لو الإيميل هو إيميلك، يفتح صفحة الأدمن
-            } else {
-                window.location.href = "student.html"; // أي شخص تاني، يفتح صفحة الطالب
-            }
+        // ---- استخراج الآي دي بتاع اليوتيوب للصورة المصغرة والتشغيل ----
+        function getYouTubeId(url) {
+            let videoId = "";
+            if (url.includes("v=")) videoId = url.split("v=")[1].substring(0, 11);
+            else if (url.includes("youtu.be/")) videoId = url.split("youtu.be/")[1].substring(0, 11);
+            return videoId;
         }
 
-        // تسجيل الدخول العادي (للأدمن)
+        // ---- عرض الفيديوهات ----
+        document.getElementById("fetchVideosBtn").addEventListener("click", async () => {
+            const selectedGrade = document.getElementById("gradeSelect").value;
+            const container = document.getElementById("playlistContainer");
+            if (!selectedGrade) return alert("الرجاء اختيار المرحلة الدراسية أولاً!");
+            
+            container.innerHTML = "<h3 style='grid-column: 1 / -1; text-align:center;'>جاري تحميل الدروس...</h3>";
+
+            try {
+                const q = query(collection(db, "playlists"), where("grade", "==", selectedGrade));
+                const querySnapshot = await getDocs(q);
+                container.innerHTML = ""; 
+
+                if (querySnapshot.empty) {
+                    container.innerHTML = "<h3 style='grid-column: 1 / -1; text-align:center; color:#777;'>لم يتم إضافة دروس لهذه المرحلة بعد.</h3>";
+                    return;
+                }
+
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const videoId = getYouTubeId(data.url);
+                    const thumbnailUrl = videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : 'https://via.placeholder.com/300x180?text=No+Thumbnail';
+
+                    // إنشاء كارت الفيديو
+                    const card = document.createElement("div");
+                    card.className = "video-card";
+                    card.innerHTML = `
+                        <img src="${thumbnailUrl}" class="thumbnail" alt="Thumbnail">
+                        <div class="play-icon">▶</div>
+                        <div class="video-info">
+                            <h3>${data.title}</h3>
+                        </div>
+                    `;
+                    
+                    // عند الضغط على الكارت، يفتح الفيديو جوه المنصة
+                    card.addEventListener("click", () => {
+                        const embedUrl = videoId ? `https://www.youtube.com/embed/${videoId}?autoplay=1` : data.url;
+                        document.getElementById("videoPlayer").src = embedUrl;
+                        document.getElementById("videoModal").style.display = "flex";
+                    });
+
+                    container.appendChild(card);
+                });
+            } catch (error) { 
+                console.error(error);
+                alert("حدث خطأ، تأكد من اتصالك بالإنترنت"); 
+            }
+        });
+
+        // ---- إغلاق نافذة الفيديو ----
+        document.getElementById("closeVideoModal").addEventListener("click", () => {
+            document.getElementById("videoModal").style.display = "none";
+            document.getElementById("videoPlayer").src = ""; // إيقاف الفيديو عند الإغلاق
+        });
+
+        // ---- نوافذ تسجيل الدخول للإدارة ----
+        const loginModal = document.getElementById("loginModal");
+        document.getElementById("openLoginModal").addEventListener("click", () => loginModal.style.display = "flex");
+        document.getElementById("closeLoginModal").addEventListener("click", () => loginModal.style.display = "none");
+
         document.getElementById("loginBtn").addEventListener("click", () => {
-            signInWithEmailAndPassword(auth, document.getElementById("email").value, document.getElementById("password").value)
-                .then((userCredential) => redirectUser(userCredential.user))
-                .catch(() => alert("تأكد من الإيميل وكلمة المرور!"));
-        });
-
-        // التسجيل بجوجل
-        document.getElementById("googleBtn").addEventListener("click", () => {
-            signInWithPopup(auth, new GoogleAuthProvider()).then((res) => redirectUser(res.user));
-        });
-
-        // التسجيل كزائر
-        document.getElementById("guestBtn").addEventListener("click", () => {
-            signInAnonymously(auth).then((res) => redirectUser(res.user));
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+            signInWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    if (userCredential.user.email === "yonisaya123@gmail.com") {
+                        window.location.href = "admin.html"; // الدخول للوحة التحكم
+                    } else {
+                        alert("هذا الحساب ليس له صلاحيات الإدارة!");
+                    }
+                })
+                .catch(() => alert("تأكد من البريد الإلكتروني وكلمة المرور"));
         });
     </script>
 </body>
