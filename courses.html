@@ -9,7 +9,6 @@
         * { box-sizing: border-box; font-family: 'Cairo', sans-serif; margin: 0; padding: 0; }
         body { background-color: #f4f7f6; color: #333; }
         
-        /* شريط التنقل الجديد */
         nav { background-color: #2c3e50; padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); flex-wrap: wrap; }
         .logo { color: white; font-size: 24px; font-weight: 900; }
         .nav-links { list-style: none; display: flex; gap: 20px; align-items: center; }
@@ -29,28 +28,30 @@
         .video-card:hover .play-icon { color: #e74c3c; }
         .video-info { padding: 15px; }
 
-        /* نافذة الفيديو والأسئلة */
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); justify-content: center; align-items: center; overflow-y: auto; padding: 20px; }
         .video-modal-content { width: 100%; max-width: 800px; position: relative; background: white; border-radius: 10px; overflow: hidden; }
         .video-container { position: relative; padding-bottom: 56.25%; height: 0; background: #000; }
         .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
         .close-video { position: absolute; top: -40px; right: 0; font-size: 35px; cursor: pointer; color: white; font-weight: bold; }
         
-        /* تنسيق قسم الأسئلة */
         .quiz-section { padding: 20px; background: #fff; text-align: right; }
         .quiz-section h3 { color: #2c3e50; margin-bottom: 15px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
         .option-btn { display: block; width: 100%; text-align: right; padding: 12px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 8px; background: #f8f9fa; cursor: pointer; font-size: 16px; transition: 0.3s; }
         .option-btn:hover { background: #e2e8f0; }
         #quizFeedback { margin-top: 15px; font-weight: bold; font-size: 18px; text-align: center; }
 
-        /* زر الإدارة */
         .admin-login-btn { background: transparent; border: 1px solid white; color: white; padding: 5px 15px; border-radius: 5px; cursor: pointer; }
         .admin-login-btn:hover { background: white; color: #2c3e50; }
+
+        /* نافذة الدخول الشيك للإدارة */
+        .login-modal-content { background-color: white; padding: 30px; border-radius: 15px; width: 90%; max-width: 400px; text-align: center; position: relative; }
+        .login-close { position: absolute; top: 10px; right: 20px; font-size: 28px; cursor: pointer; color: #aaa; }
+        .login-modal-content input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 8px; outline: none; }
+        .login-modal-content button { width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: bold; color: white; cursor: pointer; margin-top: 10px; background-color: #2c3e50; }
     </style>
 </head>
 <body>
 
-    <!-- شريط التنقل -->
     <nav>
         <div class="logo">🇫🇷 Miss Aya</div>
         <ul class="nav-links">
@@ -58,7 +59,7 @@
             <li><a href="about.html">من نحن</a></li>
             <li><a href="contact.html">تواصل معنا</a></li>
             <li><a href="courses.html" class="active">المنصة التعليمية</a></li>
-            <li><button class="admin-login-btn" onclick="window.location.href='admin.html'">الإدارة</button></li>
+            <li><button class="admin-login-btn" id="openAdminLogin">الإدارة</button></li>
         </ul>
     </nav>
 
@@ -82,16 +83,25 @@
         <div id="playlistContainer" class="video-grid"></div>
     </div>
 
+    <!-- نافذة تسجيل الدخول للإدارة -->
+    <div id="adminLoginModal" class="modal">
+        <div class="login-modal-content">
+            <span class="login-close" id="closeAdminLogin">&times;</span>
+            <h2>تسجيل دخول الإدارة</h2>
+            <input type="email" id="adminEmail" placeholder="البريد الإلكتروني">
+            <input type="password" id="adminPassword" placeholder="كلمة المرور">
+            <button id="adminLoginBtn">دخول</button>
+        </div>
+    </div>
+
     <!-- نافذة الفيديو والاختبار -->
     <div id="videoModal" class="modal">
         <div style="position: relative; width: 100%; max-width: 800px; margin: auto;">
             <span class="close-video" id="closeVideoModal">&times;</span>
             <div class="video-modal-content">
-                <!-- الفيديو -->
                 <div class="video-container">
                     <iframe id="videoPlayer" src="" allowfullscreen></iframe>
                 </div>
-                <!-- قسم الاختبار (السؤال) -->
                 <div id="quizContainer" class="quiz-section" style="display: none;">
                     <h3 id="qText">❓ السؤال سيظهر هنا</h3>
                     <div id="optionsContainer"></div>
@@ -102,8 +112,43 @@
     </div>
 
     <script type="module">
-        import { db, collection, getDocs, query, where } from './firebase-config.js';
+        import { auth, db, collection, getDocs, query, where, signInWithEmailAndPassword, onAuthStateChanged } from './firebase-config.js';
 
+        // --- نظام تسجيل الدخول للإدارة ---
+        const adminLoginModal = document.getElementById("adminLoginModal");
+        
+        // عند الضغط على زرار الإدارة
+        document.getElementById("openAdminLogin").addEventListener("click", () => {
+            // لو إنتي أصلاً مسجلة دخول، يحولك على طول لصفحة الأدمن
+            if (auth.currentUser && auth.currentUser.email === "yonisaya123@gmail.com") {
+                window.location.href = "admin.html";
+            } else {
+                // لو مش مسجلة، يفتحلك النافذة الشيك
+                adminLoginModal.style.display = "flex";
+            }
+        });
+
+        // قفل النافذة
+        document.getElementById("closeAdminLogin").addEventListener("click", () => {
+            adminLoginModal.style.display = "none";
+        });
+
+        // تسجيل الدخول
+        document.getElementById("adminLoginBtn").addEventListener("click", () => {
+            const email = document.getElementById("adminEmail").value;
+            const pass = document.getElementById("adminPassword").value;
+            signInWithEmailAndPassword(auth, email, pass)
+                .then((cred) => {
+                    if (cred.user.email === "yonisaya123@gmail.com") {
+                        window.location.href = "admin.html";
+                    } else {
+                        alert("هذا الحساب ليس له صلاحيات الإدارة!");
+                    }
+                })
+                .catch(() => alert("بيانات الدخول خاطئة!"));
+        });
+
+        // --- نظام الفيديوهات والأسئلة ---
         function getYouTubeId(url) {
             let videoId = "";
             if (url.includes("v=")) videoId = url.split("v=")[1].substring(0, 11);
@@ -141,12 +186,10 @@
                         <div class="video-info"><h3>${data.title}</h3></div>
                     `;
                     
-                    // عند فتح الفيديو
                     card.addEventListener("click", () => {
                         const embedUrl = videoId ? `https://www.youtube.com/embed/${videoId}?autoplay=1` : data.url;
                         document.getElementById("videoPlayer").src = embedUrl;
                         
-                        // تجهيز السؤال
                         const quizContainer = document.getElementById("quizContainer");
                         const qText = document.getElementById("qText");
                         const optionsContainer = document.getElementById("optionsContainer");
@@ -165,9 +208,7 @@
                                     btn.className = "option-btn";
                                     btn.innerText = optText;
                                     btn.onclick = () => {
-                                        // تعطيل الأزرار بعد الإجابة
                                         document.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
-                                        
                                         if ((index + 1).toString() === data.correctOpt) {
                                             btn.style.backgroundColor = "#2ecc71";
                                             btn.style.color = "white";
@@ -184,12 +225,10 @@
                                 }
                             });
                         } else {
-                            quizContainer.style.display = "none"; // إخفاء قسم الأسئلة لو مفيش سؤال للدرس ده
+                            quizContainer.style.display = "none"; 
                         }
-
                         document.getElementById("videoModal").style.display = "flex";
                     });
-
                     container.appendChild(card);
                 });
             } catch (error) { alert("حدث خطأ، تأكد من اتصالك بالإنترنت"); }
