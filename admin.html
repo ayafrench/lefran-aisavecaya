@@ -79,20 +79,14 @@
         </div>
     </div>
 
-    <script type="module">
-        import { auth, db, collection, addDoc, getDocs, doc, deleteDoc, onAuthStateChanged, signInWithEmailAndPassword } from './firebase-config.js';
+<script type="module">
+        import { auth, db, collection, addDoc, getDocs, doc, deleteDoc, onAuthStateChanged } from './firebase-config.js';
 
-        // 1. الدخول السريع للأدمن لو مش مسجل
+        // 1. حماية صفحة الإدارة (بدون رسائل مزعجة)
         onAuthStateChanged(auth, (user) => {
             if (!user || user.email !== "yonisaya123@gmail.com") {
-                let pass = prompt("من فضلك أدخل كلمة المرور للإدارة:");
-                if (pass) {
-                    signInWithEmailAndPassword(auth, "yonisaya123@gmail.com", pass)
-                        .then(() => alert("مرحباً بكِ في لوحة التحكم"))
-                        .catch(() => { alert("كلمة المرور خاطئة!"); window.location.href = "courses.html"; });
-                } else {
-                    window.location.href = "courses.html";
-                }
+                // لو مش الأدمن، يرجعه لصفحة الكورسات فوراً
+                window.location.href = "courses.html"; 
             }
         });
 
@@ -102,7 +96,6 @@
             const title = document.getElementById("videoTitle").value;
             const link = document.getElementById("youtubeLink").value;
             
-            // بيانات السؤال
             const questionText = document.getElementById("questionText").value;
             const opt1 = document.getElementById("opt1").value;
             const opt2 = document.getElementById("opt2").value;
@@ -123,7 +116,6 @@
                 });
                 alert("✅ تم نشر الدرس بنجاح!");
                 
-                // تفريغ الخانات بعد النشر
                 document.getElementById("videoTitle").value = "";
                 document.getElementById("youtubeLink").value = "";
                 document.getElementById("questionText").value = "";
@@ -164,5 +156,3 @@
         }
         loadAllLessons();
     </script>
-</body>
-</html>
