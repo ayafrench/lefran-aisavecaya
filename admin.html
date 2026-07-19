@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>لوحة تحكم الإدارة</title>
+</head>
+<body>
+    <h2>أهلاً مس آية - لوحة التحكم</h2>
+    
+    <select id="gradeLevel">
+        <option value="4_primary">الصف الرابع الابتدائي</option>
+        <option value="5_primary">الصف الخامس الابتدائي</option>
+        <option value="6_primary">الصف السادس الابتدائي</option>
+        <option value="1_prep">الصف الأول الإعدادي</option>
+        <!-- يمكنك إضافة باقي المراحل حتى 3 ثانوي هنا -->
+    </select>
+    <input type="text" id="videoTitle" placeholder="عنوان الفيديو / الدرس">
+    <input type="text" id="youtubeLink" placeholder="رابط فيديو اليوتيوب">
+    <button id="addVideoBtn">إضافة للمنصة</button>
+
+    <script type="module">
+        import { auth, db, collection, addDoc, onAuthStateChanged } from './firebase-config.js';
+
+        // حماية الصفحة: طرد أي شخص ليس الأدمن
+        onAuthStateChanged(auth, (user) => {
+            if (!user || user.email !== "yonisaya123@gmail.com") {
+                window.location.href = "index.html"; 
+            }
+        });
+
+        document.getElementById("addVideoBtn").addEventListener("click", async () => {
+            const level = document.getElementById("gradeLevel").value;
+            const title = document.getElementById("videoTitle").value;
+            const link = document.getElementById("youtubeLink").value;
+
+            if(title && link) {
+                try {
+                    await addDoc(collection(db, "playlists"), {
+                        grade: level,
+                        title: title,
+                        url: link
+                    });
+                    alert("تم إضافة الفيديو بنجاح للمنصة!");
+                } catch (e) {
+                    console.error("Error adding document: ", e);
+                }
+            } else {
+                alert("برجاء كتابة العنوان والرابط");
+            }
+        });
+    </script>
+</body>
+</html>
