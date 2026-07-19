@@ -2,68 +2,70 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Le Français avec Aya Wael</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; background-color: #f4f4f9; padding: 50px; }
-        .container { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); max-width: 400px; margin: auto; }
-        input, select, button { width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px; border: 1px solid #ccc; }
-        button { background-color: #0056b3; color: white; cursor: pointer; border: none; font-size: 16px; }
-        button:hover { background-color: #004494; }
-        .google-btn { background-color: #db4437; }
-        .guest-btn { background-color: #28a745; }
+        * { box-sizing: border-box; font-family: 'Cairo', sans-serif; margin: 0; padding: 0; }
+        body { background: linear-gradient(135deg, #74ebd5 0%, #9face6 100%); height: 100vh; display: flex; align-items: center; justify-content: center; }
+        .login-box { background: rgba(255, 255, 255, 0.95); padding: 40px; border-radius: 20px; box-shadow: 0 15px 25px rgba(0,0,0,0.1); width: 100%; max-width: 450px; text-align: center; }
+        h1 { color: #2c3e50; font-size: 28px; margin-bottom: 10px; }
+        p { color: #7f8c8d; margin-bottom: 30px; }
+        input { width: 100%; padding: 15px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 10px; font-size: 16px; outline: none; transition: 0.3s; }
+        input:focus { border-color: #3498db; box-shadow: 0 0 8px rgba(52, 152, 219, 0.3); }
+        button { width: 100%; padding: 15px; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; color: white; cursor: pointer; transition: 0.3s; margin-bottom: 10px; }
+        .btn-login { background-color: #2c3e50; }
+        .btn-login:hover { background-color: #1a252f; transform: translateY(-2px); }
+        .btn-google { background-color: #e74c3c; }
+        .btn-google:hover { background-color: #c0392b; }
+        .btn-guest { background-color: #27ae60; }
+        .btn-guest:hover { background-color: #2ecc71; }
+        hr { border: 0; height: 1px; background: #eee; margin: 20px 0; }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>Le Français avec Aya Wael</h1>
-        <p>مرحباً بك في منصة تعلم اللغة الفرنسية. ابدأ الكورس الآن!</p>
+    <div class="login-box">
+        <h1>🇫🇷 Le Français avec Aya Wael</h1>
+        <p>منصتك الأولى لإتقان اللغة الفرنسية</p>
 
-        <!-- تسجيل الدخول بالإيميل (لأدمن أو طالب مسجل) -->
-        <input type="email" id="email" placeholder="البريد الإلكتروني">
+        <input type="email" id="email" placeholder="البريد الإلكتروني (للإدارة)">
         <input type="password" id="password" placeholder="كلمة المرور">
-        <button id="loginBtn">تسجيل الدخول</button>
+        <button id="loginBtn" class="btn-login">تسجيل الدخول</button>
 
         <hr>
-        <!-- خيارات أخرى للطلاب -->
-        <button id="googleBtn" class="google-btn">تسجيل الدخول بجوجل</button>
-        <button id="guestBtn" class="guest-btn">الدخول كزائر (بدون حساب)</button>
+        
+        <button id="googleBtn" class="btn-google">التسجيل باستخدام Google (للطلاب)</button>
+        <button id="guestBtn" class="btn-guest">الدخول كزائر للمشاهدة</button>
     </div>
 
     <script type="module">
         import { auth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signInAnonymously } from './firebase-config.js';
 
-        // وظيفة التحقق وتوجيه المستخدم
+        // توجيه المستخدم حسب نوع الحساب
         function redirectUser(user) {
             if (user.email === "yonisaya123@gmail.com") {
-                window.location.href = "admin.html"; // توجيه لصفحة الأدمن
+                window.location.href = "admin.html"; // لو الإيميل هو إيميلك، يفتح صفحة الأدمن
             } else {
-                window.location.href = "student.html"; // توجيه لصفحة الطالب
+                window.location.href = "student.html"; // أي شخص تاني، يفتح صفحة الطالب
             }
         }
 
-        // تسجيل الدخول بالإيميل والباسورد
+        // تسجيل الدخول العادي (للأدمن)
         document.getElementById("loginBtn").addEventListener("click", () => {
-            const email = document.getElementById("email").value;
-            const password = document.getElementById("password").value;
-            signInWithEmailAndPassword(auth, email, password)
+            signInWithEmailAndPassword(auth, document.getElementById("email").value, document.getElementById("password").value)
                 .then((userCredential) => redirectUser(userCredential.user))
-                .catch((error) => alert("خطأ في تسجيل الدخول: " + error.message));
+                .catch(() => alert("تأكد من الإيميل وكلمة المرور!"));
         });
 
-        // تسجيل الدخول بجوجل
+        // التسجيل بجوجل
         document.getElementById("googleBtn").addEventListener("click", () => {
-            const provider = new GoogleAuthProvider();
-            signInWithPopup(auth, provider)
-                .then((result) => redirectUser(result.user))
-                .catch((error) => alert("خطأ: " + error.message));
+            signInWithPopup(auth, new GoogleAuthProvider()).then((res) => redirectUser(res.user));
         });
 
-        // الدخول كزائر
+        // التسجيل كزائر
         document.getElementById("guestBtn").addEventListener("click", () => {
-            signInAnonymously(auth)
-                .then((userCredential) => redirectUser(userCredential.user))
-                .catch((error) => alert("خطأ: " + error.message));
+            signInAnonymously(auth).then((res) => redirectUser(res.user));
         });
     </script>
 </body>
