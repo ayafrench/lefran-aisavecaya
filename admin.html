@@ -39,21 +39,24 @@
         <p>مرحباً مادام آية</p>
     </div>
 
-    <!-- الإحصائيات -->
     <div class="dashboard-stats">
         <div class="stat-box"><h3>👁️ إجمالي زوار الموقع</h3><p id="totalVisitors">0</p></div>
         <div class="stat-box"><h3>📚 الدروس المرفوعة</h3><p id="totalLessons">0</p></div>
     </div>
 
     <div class="admin-container">
-        <!-- قسم إضافة الفيديوهات والأسئلة اللانهائية -->
         <div class="card" style="flex: 2;">
             <h2>➕ إضافة درس جديد</h2>
             <select id="gradeLevel">
                 <option value="4_primary">الصف الرابع الابتدائي</option>
+                <option value="5_primary">الصف الخامس الابتدائي</option>
+                <option value="6_primary">الصف السادس الابتدائي</option>
                 <option value="1_prep">الصف الأول الإعدادي</option>
+                <option value="2_prep">الصف الثاني الإعدادي</option>
+                <option value="3_prep">الصف الثالث الإعدادي</option>
                 <option value="1_sec">الصف الأول الثانوي</option>
-                <!-- ضيفي باقي المراحل هنا -->
+                <option value="2_sec">الصف الثاني الثانوي</option>
+                <option value="3_sec">الصف الثالث الثانوي</option>
             </select>
             <input type="text" id="videoTitle" placeholder="عنوان الدرس">
             <input type="text" id="youtubeLink" placeholder="رابط فيديو اليوتيوب">
@@ -66,7 +69,6 @@
         </div>
 
         <div style="flex: 1; display: flex; flex-direction: column; gap: 20px; min-width: 300px;">
-            <!-- قسم الروابط -->
             <div class="card">
                 <h2>🔗 روابط السوشيال ميديا</h2>
                 <input type="text" id="fbLink" placeholder="رابط صفحة الفيسبوك">
@@ -74,7 +76,6 @@
                 <button id="saveLinksBtn" style="background-color: #e67e22;">حفظ الروابط</button>
             </div>
 
-            <!-- قسم إدارة الدروس -->
             <div class="card">
                 <h2>📂 إدارة الدروس</h2>
                 <div id="allLessonsContainer" style="max-height: 400px; overflow-y: auto;">جاري التحميل...</div>
@@ -88,17 +89,13 @@
         onAuthStateChanged(auth, (user) => { if (!user || user.email !== "yonisaya123@gmail.com") window.location.href = "courses.html"; });
         document.getElementById("logoutBtn").addEventListener("click", () => signOut(auth));
 
-        // 1. نظام الأسئلة المتعددة
         const qContainer = document.getElementById("questionsContainer");
-        let qCount = 0;
-
         document.getElementById("addQuestionBtn").addEventListener("click", () => {
-            qCount++;
             const qDiv = document.createElement("div");
             qDiv.className = "question-block";
             qDiv.innerHTML = `
                 <button class="remove-q-btn" onclick="this.parentElement.remove()">❌ حذف</button>
-                <input type="text" class="q-text" placeholder="اكتب السؤال هنا (مثال: ما معنى كلمة Bonjour؟)">
+                <input type="text" class="q-text" placeholder="اكتب السؤال هنا">
                 <input type="text" class="q-opt1" placeholder="الاختيار الأول">
                 <input type="text" class="q-opt2" placeholder="الاختيار الثاني">
                 <input type="text" class="q-opt3" placeholder="الاختيار الثالث">
@@ -111,7 +108,6 @@
             qContainer.appendChild(qDiv);
         });
 
-        // 2. نشر الفيديو بالأسئلة
         document.getElementById("addVideoBtn").addEventListener("click", async () => {
             const level = document.getElementById("gradeLevel").value;
             const title = document.getElementById("videoTitle").value;
@@ -119,7 +115,6 @@
             
             if(!title || !link) return alert("يرجى إدخال عنوان الدرس ورابط اليوتيوب.");
 
-            // تجميع الأسئلة في مصفوفة (Array)
             let questionsArray = [];
             document.querySelectorAll('.question-block').forEach(block => {
                 const text = block.querySelector('.q-text').value;
@@ -135,33 +130,21 @@
             });
 
             document.getElementById("addVideoBtn").innerText = "جاري النشر...";
-            
-            await addDoc(collection(db, "playlists"), { 
-                grade: level, title: title, url: link, 
-                questions: questionsArray, // رفع المصفوفة
-                views: 0, likes: 0 // تصفير العدادات الجديدة
-            });
-            
+            await addDoc(collection(db, "playlists"), { grade: level, title: title, url: link, questions: questionsArray, views: 0, likes: 0 });
             alert("✅ تم نشر الدرس!");
-            window.location.reload(); // إعادة تحميل الصفحة لتنظيف الخانات
+            window.location.reload(); 
         });
 
-        // 3. إدارة السوشيال ميديا والإحصائيات
         async function loadDashboardData() {
-            // جلب الإحصائيات
             const statsSnap = await getDoc(doc(db, "settings", "stats"));
-            if (statsSnap.exists()) {
-                document.getElementById("totalVisitors").innerText = statsSnap.data().visitors || 0;
-            }
+            if (statsSnap.exists()) document.getElementById("totalVisitors").innerText = statsSnap.data().visitors || 0;
 
-            // جلب الروابط الحالية
             const contactSnap = await getDoc(doc(db, "settings", "contact"));
             if (contactSnap.exists()) {
                 document.getElementById("fbLink").value = contactSnap.data().facebook || "";
                 document.getElementById("ytLink").value = contactSnap.data().youtube || "";
             }
 
-            // جلب الدروس
             const container = document.getElementById("allLessonsContainer");
             const querySnapshot = await getDocs(collection(db, "playlists"));
             document.getElementById("totalLessons").innerText = querySnapshot.size;
@@ -187,10 +170,7 @@
         }
 
         document.getElementById("saveLinksBtn").addEventListener("click", async () => {
-            await setDoc(doc(db, "settings", "contact"), {
-                facebook: document.getElementById("fbLink").value,
-                youtube: document.getElementById("ytLink").value
-            }, { merge: true });
+            await setDoc(doc(db, "settings", "contact"), { facebook: document.getElementById("fbLink").value, youtube: document.getElementById("ytLink").value }, { merge: true });
             alert("تم حفظ الروابط بنجاح!");
         });
 
