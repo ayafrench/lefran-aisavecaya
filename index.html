@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>Le Français avec Aya Wael</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; background-color: #f4f4f9; padding: 50px; }
+        .container { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); max-width: 400px; margin: auto; }
+        input, select, button { width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px; border: 1px solid #ccc; }
+        button { background-color: #0056b3; color: white; cursor: pointer; border: none; font-size: 16px; }
+        button:hover { background-color: #004494; }
+        .google-btn { background-color: #db4437; }
+        .guest-btn { background-color: #28a745; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Le Français avec Aya Wael</h1>
+        <p>مرحباً بك في منصة تعلم اللغة الفرنسية. ابدأ الكورس الآن!</p>
+
+        <!-- تسجيل الدخول بالإيميل (لأدمن أو طالب مسجل) -->
+        <input type="email" id="email" placeholder="البريد الإلكتروني">
+        <input type="password" id="password" placeholder="كلمة المرور">
+        <button id="loginBtn">تسجيل الدخول</button>
+
+        <hr>
+        <!-- خيارات أخرى للطلاب -->
+        <button id="googleBtn" class="google-btn">تسجيل الدخول بجوجل</button>
+        <button id="guestBtn" class="guest-btn">الدخول كزائر (بدون حساب)</button>
+    </div>
+
+    <script type="module">
+        import { auth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signInAnonymously } from './firebase-config.js';
+
+        // وظيفة التحقق وتوجيه المستخدم
+        function redirectUser(user) {
+            if (user.email === "yonisaya123@gmail.com") {
+                window.location.href = "admin.html"; // توجيه لصفحة الأدمن
+            } else {
+                window.location.href = "student.html"; // توجيه لصفحة الطالب
+            }
+        }
+
+        // تسجيل الدخول بالإيميل والباسورد
+        document.getElementById("loginBtn").addEventListener("click", () => {
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+            signInWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => redirectUser(userCredential.user))
+                .catch((error) => alert("خطأ في تسجيل الدخول: " + error.message));
+        });
+
+        // تسجيل الدخول بجوجل
+        document.getElementById("googleBtn").addEventListener("click", () => {
+            const provider = new GoogleAuthProvider();
+            signInWithPopup(auth, provider)
+                .then((result) => redirectUser(result.user))
+                .catch((error) => alert("خطأ: " + error.message));
+        });
+
+        // الدخول كزائر
+        document.getElementById("guestBtn").addEventListener("click", () => {
+            signInAnonymously(auth)
+                .then((userCredential) => redirectUser(userCredential.user))
+                .catch((error) => alert("خطأ: " + error.message));
+        });
+    </script>
+</body>
+</html>
