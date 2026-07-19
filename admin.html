@@ -9,21 +9,19 @@
         * { box-sizing: border-box; font-family: 'Cairo', sans-serif; }
         body { background-color: #edf2f7; margin: 0; padding: 20px; }
         .header { text-align: center; margin-bottom: 30px; color: #2d3748; }
-        .admin-container { display: flex; gap: 20px; max-width: 1200px; margin: auto; flex-wrap: wrap; }
-        .card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); flex: 1; min-width: 300px; }
+        .admin-container { display: flex; gap: 20px; max-width: 1200px; margin: auto; flex-wrap: wrap; align-items: flex-start; }
+        .card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); flex: 1; min-width: 300px; margin-bottom: 20px; }
         h2 { border-bottom: 2px solid #3182ce; padding-bottom: 10px; margin-bottom: 20px; color: #2b6cb0; }
-        input, select, button { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #cbd5e0; border-radius: 8px; font-size: 16px; }
-        button { background-color: #3182ce; color: white; border: none; cursor: pointer; font-weight: bold; }
+        input, select, button { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #cbd5e0; border-radius: 8px; font-size: 16px; outline: none; }
+        button { background-color: #3182ce; color: white; border: none; cursor: pointer; font-weight: bold; transition: 0.3s; }
         button:hover { background-color: #2b6cb0; }
         
-        /* تصميم قائمة الفيديوهات للأدمن */
         .lesson-item { background: #f7fafc; border: 1px solid #e2e8f0; padding: 15px; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
-        .lesson-info h4 { margin: 0 0 5px 0; color: #2d3748; }
-        .lesson-info span { font-size: 13px; color: #718096; background: #e2e8f0; padding: 3px 8px; border-radius: 10px; }
         .delete-btn { background-color: #e53e3e; width: auto; padding: 8px 15px; margin: 0; }
         .delete-btn:hover { background-color: #c53030; }
-        
         .logout-btn { background-color: #718096; width: auto; position: absolute; top: 20px; left: 20px; }
+        .save-btn { background-color: #38a169; }
+        .save-btn:hover { background-color: #2f855a; }
     </style>
 </head>
 <body>
@@ -32,112 +30,124 @@
 
     <div class="header">
         <h1>👑 لوحة تحكم الإدارة (الأدمن)</h1>
-        <p>مرحباً مس آية، يمكنك إضافة أو حذف الدروس من هنا</p>
     </div>
 
     <div class="admin-container">
-        <!-- قسم إضافة فيديو جديد -->
-        <div class="card">
-            <h2>➕ إضافة درس جديد</h2>
-            <select id="gradeLevel">
-                <option value="4_primary">الصف الرابع الابتدائي</option>
-                <option value="5_primary">الصف الخامس الابتدائي</option>
-                <option value="6_primary">الصف السادس الابتدائي</option>
-                <option value="1_prep">الصف الأول الإعدادي</option>
-                <option value="2_prep">الصف الثاني الإعدادي</option>
-                <option value="3_prep">الصف الثالث الإعدادي</option>
-                <option value="1_sec">الصف الأول الثانوي</option>
-                <option value="2_sec">الصف الثاني الثانوي</option>
-                <option value="3_sec">الصف الثالث الثانوي</option>
-            </select>
-            <input type="text" id="videoTitle" placeholder="عنوان الدرس (مثال: الوحدة الأولى - الدرس الأول)">
-            <input type="text" id="youtubeLink" placeholder="رابط فيديو اليوتيوب">
-            <button id="addVideoBtn">نشر الدرس</button>
-        </div>
+        
+        <!-- عمود اليمين -->
+        <div style="flex: 1; min-width: 300px;">
+            <!-- إضافة درس جديد -->
+            <div class="card">
+                <h2>➕ إضافة درس جديد</h2>
+                <select id="gradeLevel">
+                    <option value="4_primary">الصف الرابع الابتدائي</option>
+                    <option value="5_primary">الصف الخامس الابتدائي</option>
+                    <option value="6_primary">الصف السادس الابتدائي</option>
+                    <option value="1_prep">الصف الأول الإعدادي</option>
+                    <option value="2_prep">الصف الثاني الإعدادي</option>
+                    <option value="3_prep">الصف الثالث الإعدادي</option>
+                    <option value="1_sec">الصف الأول الثانوي</option>
+                    <option value="2_sec">الصف الثاني الثانوي</option>
+                    <option value="3_sec">الصف الثالث الثانوي</option>
+                </select>
+                <input type="text" id="videoTitle" placeholder="عنوان الدرس">
+                <input type="text" id="youtubeLink" placeholder="رابط اليوتيوب">
+                <button id="addVideoBtn">نشر الدرس</button>
+            </div>
 
-        <!-- قسم إدارة الفيديوهات الحالية -->
-        <div class="card" style="flex: 2;">
-            <h2>📂 إدارة الدروس المرفوعة</h2>
-            <button id="loadAllBtn" style="background-color: #38a169;">🔄 تحديث وعرض كل الدروس</button>
-            <div id="allLessonsContainer">
-                <p style="text-align: center; color: #a0aec0;">اضغط على "تحديث وعرض كل الدروس"</p>
+            <!-- إعدادات التواصل -->
+            <div class="card">
+                <h2>📱 إعدادات التواصل (الصفحة الرئيسية)</h2>
+                <label>رابط واتساب (مثال: https://wa.me/201...)</label>
+                <input type="text" id="waInput" placeholder="رابط الواتساب">
+                
+                <label>رابط فيسبوك</label>
+                <input type="text" id="fbInput" placeholder="رابط الفيسبوك">
+                
+                <label>رابط انستجرام</label>
+                <input type="text" id="igInput" placeholder="رابط الانستجرام">
+                
+                <button id="saveContactsBtn" class="save-btn">💾 حفظ التعديلات</button>
             </div>
         </div>
+
+        <!-- عمود الشمال (الدروس) -->
+        <div class="card" style="flex: 2;">
+            <h2>📂 إدارة الدروس المرفوعة</h2>
+            <button id="loadAllBtn" style="background-color: #718096; margin-bottom: 20px;">🔄 تحديث القائمة</button>
+            <div id="allLessonsContainer"></div>
+        </div>
+
     </div>
 
     <script type="module">
-        import { auth, db, collection, addDoc, getDocs, doc, deleteDoc, onAuthStateChanged, signOut } from './firebase-config.js';
+        import { auth, db, collection, addDoc, getDocs, doc, deleteDoc, setDoc, getDoc, onAuthStateChanged, signOut } from './firebase-config.js';
 
         // حماية الصفحة
         onAuthStateChanged(auth, (user) => {
-            if (!user || user.email !== "yonisaya123@gmail.com") window.location.href = "index.html"; 
+            if (!user || user.email !== "yonisaya123@gmail.com") window.location.href = "courses.html"; 
         });
 
-        // إضافة درس
+        // 1. إضافة فيديو
         document.getElementById("addVideoBtn").addEventListener("click", async () => {
             const level = document.getElementById("gradeLevel").value;
             const title = document.getElementById("videoTitle").value;
             const link = document.getElementById("youtubeLink").value;
-
             if(title && link) {
-                document.getElementById("addVideoBtn").innerText = "جاري النشر...";
                 await addDoc(collection(db, "playlists"), { grade: level, title: title, url: link });
-                alert("✅ تم نشر الدرس بنجاح!");
-                document.getElementById("videoTitle").value = "";
-                document.getElementById("youtubeLink").value = "";
-                document.getElementById("addVideoBtn").innerText = "نشر الدرس";
-                loadAllLessons(); // تحديث القائمة فوراً
-            } else {
-                alert("يرجى إدخال العنوان والرابط");
+                alert("تم النشر!");
+                loadAllLessons();
             }
         });
 
-        // جلب وعرض كل الدروس للحذف
+        // 2. جلب وحذف الفيديوهات
         async function loadAllLessons() {
             const container = document.getElementById("allLessonsContainer");
             container.innerHTML = "جاري التحميل...";
             const querySnapshot = await getDocs(collection(db, "playlists"));
             container.innerHTML = "";
-
-            if (querySnapshot.empty) {
-                container.innerHTML = "<p>لا يوجد أي دروس مرفوعة حتى الآن.</p>";
-                return;
-            }
-
-            querySnapshot.forEach((documentSnapshot) => {
-                const data = documentSnapshot.data();
-                const docId = documentSnapshot.id; // معرف المستند للحذف
-
-                const lessonDiv = document.createElement("div");
-                lessonDiv.className = "lesson-item";
-                lessonDiv.innerHTML = `
-                    <div class="lesson-info">
-                        <h4>${data.title}</h4>
-                        <span>المرحلة: ${data.grade}</span>
-                    </div>
-                    <button class="delete-btn" data-id="${docId}">🗑️ حذف</button>
-                `;
-                container.appendChild(lessonDiv);
-            });
-
-            // تفعيل أزرار الحذف
-            document.querySelectorAll(".delete-btn").forEach(btn => {
-                btn.addEventListener("click", async (e) => {
-                    if (confirm("هل أنت متأكد من حذف هذا الدرس نهائياً؟")) {
-                        const idToDelete = e.target.getAttribute("data-id");
-                        await deleteDoc(doc(db, "playlists", idToDelete));
-                        alert("تم الحذف!");
-                        loadAllLessons(); // تحديث القائمة بعد الحذف
-                    }
-                });
+            querySnapshot.forEach((docSnap) => {
+                const data = docSnap.data();
+                container.innerHTML += `
+                    <div class="lesson-item">
+                        <div>
+                            <h4>${data.title}</h4>
+                            <small>${data.grade}</small>
+                        </div>
+                        <button class="delete-btn" onclick="deleteVideo('${docSnap.id}')">حذف</button>
+                    </div>`;
             });
         }
-
-        document.getElementById("loadAllBtn").addEventListener("click", loadAllLessons);
-        document.getElementById("logoutBtn").addEventListener("click", () => signOut(auth));
-
-        // تشغيل تلقائي لجلب الفيديوهات عند فتح الصفحة
+        window.deleteVideo = async (id) => {
+            if(confirm("هل أنت متأكد؟")) { await deleteDoc(doc(db, "playlists", id)); loadAllLessons(); }
+        }
         loadAllLessons();
+
+        // 3. جلب وحفظ إعدادات التواصل
+        async function loadContacts() {
+            const docSnap = await getDoc(doc(db, "settings", "contact"));
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                document.getElementById("waInput").value = data.whatsapp || "";
+                document.getElementById("fbInput").value = data.facebook || "";
+                document.getElementById("igInput").value = data.instagram || "";
+            }
+        }
+        loadContacts();
+
+        document.getElementById("saveContactsBtn").addEventListener("click", async () => {
+            document.getElementById("saveContactsBtn").innerText = "جاري الحفظ...";
+            await setDoc(doc(db, "settings", "contact"), {
+                whatsapp: document.getElementById("waInput").value,
+                facebook: document.getElementById("fbInput").value,
+                instagram: document.getElementById("igInput").value
+            });
+            alert("✅ تم حفظ روابط التواصل بنجاح!");
+            document.getElementById("saveContactsBtn").innerText = "💾 حفظ التعديلات";
+        });
+
+        document.getElementById("logoutBtn").addEventListener("click", () => signOut(auth));
+        document.getElementById("loadAllBtn").addEventListener("click", loadAllLessons);
     </script>
 </body>
 </html>
