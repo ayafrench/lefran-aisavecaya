@@ -9,8 +9,8 @@
         * { box-sizing: border-box; font-family: 'Cairo', sans-serif; }
         body { background-color: #edf2f7; margin: 0; padding: 20px; }
         .header { text-align: center; margin-bottom: 30px; color: #2d3748; }
-        .dashboard-stats { display: flex; gap: 20px; justify-content: center; margin-bottom: 30px; }
-        .stat-box { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: center; flex: 1; max-width: 200px; border-bottom: 4px solid #3182ce; }
+        .dashboard-stats { display: flex; gap: 20px; justify-content: center; margin-bottom: 30px; flex-wrap: wrap;}
+        .stat-box { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: center; flex: 1; min-width: 150px; max-width: 250px; border-bottom: 4px solid #3182ce; }
         .stat-box h3 { margin: 0; color: #718096; font-size: 16px; }
         .stat-box p { margin: 10px 0 0; font-size: 24px; font-weight: bold; color: #2d3748; }
         
@@ -20,14 +20,17 @@
         input, select, button { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #cbd5e0; border-radius: 8px; font-size: 16px; outline: none; }
         button { background-color: #3182ce; color: white; border: none; cursor: pointer; font-weight: bold; transition: 0.3s; }
         button:hover { background-color: #2b6cb0; }
-        
         .question-block { background: #f7fafc; border: 1px dashed #a0aec0; padding: 15px; border-radius: 8px; margin-bottom: 15px; position: relative; }
         .remove-q-btn { position: absolute; top: 5px; left: 5px; background: #e53e3e; width: auto; padding: 5px 10px; font-size: 12px; }
         .add-q-btn { background-color: #48bb78; margin-bottom: 20px; }
-        
         .lesson-item { background: #f7fafc; border: 1px solid #e2e8f0; padding: 15px; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
         .delete-btn { background-color: #e53e3e; width: auto; padding: 8px 15px; margin: 0; }
         .logout-btn { background-color: #718096; width: auto; position: absolute; top: 20px; left: 20px; }
+        
+        /* جدول نتائج الطلاب */
+        .results-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .results-table th, .results-table td { border: 1px solid #cbd5e0; padding: 10px; text-align: right; font-size: 14px;}
+        .results-table th { background-color: #e2e8f0; color: #2d3748; }
     </style>
 </head>
 <body>
@@ -40,11 +43,35 @@
     </div>
 
     <div class="dashboard-stats">
-        <div class="stat-box"><h3>👁️ إجمالي زوار الموقع</h3><p id="totalVisitors">0</p></div>
         <div class="stat-box"><h3>📚 الدروس المرفوعة</h3><p id="totalLessons">0</p></div>
+        <div class="stat-box"><h3>🎓 امتحانات تم حلها</h3><p id="totalExams">0</p></div>
+    </div>
+
+    <!-- قسم نتائج الطلاب -->
+    <div class="admin-container" style="margin-bottom: 20px;">
+        <div class="card" style="width: 100%;">
+            <h2>📊 نتائج وإجابات الطلاب</h2>
+            <div style="overflow-x: auto;">
+                <table class="results-table">
+                    <thead>
+                        <tr>
+                            <th>الاسم</th>
+                            <th>الإيميل</th>
+                            <th>الدرس</th>
+                            <th>الدرجة</th>
+                            <th>التاريخ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentsResultsBody">
+                        <tr><td colspan="5" style="text-align: center;">جاري التحميل...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
     <div class="admin-container">
+        <!-- قسم إضافة الفيديوهات -->
         <div class="card" style="flex: 2;">
             <h2>➕ إضافة درس جديد</h2>
             <select id="gradeLevel">
@@ -64,18 +91,10 @@
             <h3 style="color:#4a5568; margin: 20px 0 10px;">❓ أسئلة الدرس (اختياري)</h3>
             <div id="questionsContainer"></div>
             <button class="add-q-btn" id="addQuestionBtn">➕ إضافة سؤال جديد</button>
-            
             <button id="addVideoBtn" style="background-color: #2c3e50; font-size: 18px; padding: 15px;">🚀 نشر الدرس بالأسئلة</button>
         </div>
 
         <div style="flex: 1; display: flex; flex-direction: column; gap: 20px; min-width: 300px;">
-            <div class="card">
-                <h2>🔗 روابط السوشيال ميديا</h2>
-                <input type="text" id="fbLink" placeholder="رابط صفحة الفيسبوك">
-                <input type="text" id="ytLink" placeholder="رابط قناة اليوتيوب">
-                <button id="saveLinksBtn" style="background-color: #e67e22;">حفظ الروابط</button>
-            </div>
-
             <div class="card">
                 <h2>📂 إدارة الدروس</h2>
                 <div id="allLessonsContainer" style="max-height: 400px; overflow-y: auto;">جاري التحميل...</div>
@@ -84,11 +103,13 @@
     </div>
 
     <script type="module">
-        import { auth, db, collection, addDoc, getDocs, doc, deleteDoc, updateDoc, setDoc, getDoc, onAuthStateChanged, signOut } from './firebase-config.js';
+        import { auth, db, collection, addDoc, getDocs, doc, deleteDoc, onAuthStateChanged, signOut } from './firebase-config.js';
 
+        // التأكد من صلاحيات الإدارة
         onAuthStateChanged(auth, (user) => { if (!user || user.email !== "yonisaya123@gmail.com") window.location.href = "courses.html"; });
         document.getElementById("logoutBtn").addEventListener("click", () => signOut(auth));
 
+        // إضافة الأسئلة
         const qContainer = document.getElementById("questionsContainer");
         document.getElementById("addQuestionBtn").addEventListener("click", () => {
             const qDiv = document.createElement("div");
@@ -99,81 +120,69 @@
                 <input type="text" class="q-opt1" placeholder="الاختيار الأول">
                 <input type="text" class="q-opt2" placeholder="الاختيار الثاني">
                 <input type="text" class="q-opt3" placeholder="الاختيار الثالث">
-                <select class="q-correct">
-                    <option value="1">الاختيار الأول هو الصحيح</option>
-                    <option value="2">الاختيار الثاني هو الصحيح</option>
-                    <option value="3">الاختيار الثالث هو الصحيح</option>
-                </select>
+                <select class="q-correct"><option value="1">الأول</option><option value="2">الثاني</option><option value="3">الثالث</option></select>
             `;
             qContainer.appendChild(qDiv);
         });
 
+        // نشر الفيديو
         document.getElementById("addVideoBtn").addEventListener("click", async () => {
             const level = document.getElementById("gradeLevel").value;
             const title = document.getElementById("videoTitle").value;
             const link = document.getElementById("youtubeLink").value;
-            
             if(!title || !link) return alert("يرجى إدخال عنوان الدرس ورابط اليوتيوب.");
-
             let questionsArray = [];
             document.querySelectorAll('.question-block').forEach(block => {
                 const text = block.querySelector('.q-text').value;
                 if(text) {
                     questionsArray.push({
-                        q: text,
-                        opt1: block.querySelector('.q-opt1').value,
-                        opt2: block.querySelector('.q-opt2').value,
-                        opt3: block.querySelector('.q-opt3').value,
-                        correct: block.querySelector('.q-correct').value
+                        q: text, opt1: block.querySelector('.q-opt1').value, opt2: block.querySelector('.q-opt2').value,
+                        opt3: block.querySelector('.q-opt3').value, correct: block.querySelector('.q-correct').value
                     });
                 }
             });
-
             document.getElementById("addVideoBtn").innerText = "جاري النشر...";
             await addDoc(collection(db, "playlists"), { grade: level, title: title, url: link, questions: questionsArray, views: 0, likes: 0 });
-            alert("✅ تم نشر الدرس!");
-            window.location.reload(); 
+            alert("✅ تم نشر الدرس!"); window.location.reload(); 
         });
 
+        // جلب البيانات للوحة التحكم
         async function loadDashboardData() {
-            const statsSnap = await getDoc(doc(db, "settings", "stats"));
-            if (statsSnap.exists()) document.getElementById("totalVisitors").innerText = statsSnap.data().visitors || 0;
-
-            const contactSnap = await getDoc(doc(db, "settings", "contact"));
-            if (contactSnap.exists()) {
-                document.getElementById("fbLink").value = contactSnap.data().facebook || "";
-                document.getElementById("ytLink").value = contactSnap.data().youtube || "";
-            }
-
+            // جلب الدروس
             const container = document.getElementById("allLessonsContainer");
             const querySnapshot = await getDocs(collection(db, "playlists"));
             document.getElementById("totalLessons").innerText = querySnapshot.size;
             container.innerHTML = "";
             querySnapshot.forEach((docSnap) => {
                 const data = docSnap.data();
-                container.innerHTML += `
-                    <div class="lesson-item">
-                        <div>
-                            <h4>${data.title}</h4>
-                            <small>👀 ${data.views || 0} | 👍 ${data.likes || 0}</small>
-                        </div>
-                        <button class="delete-btn" onclick="deleteVideo('${docSnap.id}')">حذف</button>
-                    </div>`;
+                container.innerHTML += `<div class="lesson-item"><div><h4>${data.title}</h4></div><button class="delete-btn" onclick="deleteVideo('${docSnap.id}')">حذف</button></div>`;
+            });
+
+            // جلب نتائج الطلاب
+            const resultsBody = document.getElementById("studentsResultsBody");
+            const resultsSnapshot = await getDocs(collection(db, "quiz_results"));
+            document.getElementById("totalExams").innerText = resultsSnapshot.size;
+            resultsBody.innerHTML = "";
+            if (resultsSnapshot.empty) {
+                resultsBody.innerHTML = "<tr><td colspan='5' style='text-align:center;'>لا يوجد نتائج حتى الآن</td></tr>";
+                return;
+            }
+            resultsSnapshot.forEach((docSnap) => {
+                const data = docSnap.data();
+                const date = data.timestamp ? new Date(data.timestamp).toLocaleDateString('ar-EG') : 'غير معروف';
+                resultsBody.innerHTML += `
+                    <tr>
+                        <td><strong>${data.student_name}</strong></td>
+                        <td>${data.student_email}</td>
+                        <td>${data.lesson_title}</td>
+                        <td style="color: green; font-weight: bold;">${data.score} / ${data.total_questions}</td>
+                        <td>${date}</td>
+                    </tr>
+                `;
             });
         }
         
-        window.deleteVideo = async (id) => {
-            if(confirm("هل أنت متأكد من الحذف؟")) { 
-                await deleteDoc(doc(db, "playlists", id)); 
-                loadDashboardData(); 
-            }
-        }
-
-        document.getElementById("saveLinksBtn").addEventListener("click", async () => {
-            await setDoc(doc(db, "settings", "contact"), { facebook: document.getElementById("fbLink").value, youtube: document.getElementById("ytLink").value }, { merge: true });
-            alert("تم حفظ الروابط بنجاح!");
-        });
-
+        window.deleteVideo = async (id) => { if(confirm("تأكيد الحذف؟")) { await deleteDoc(doc(db, "playlists", id)); loadDashboardData(); } }
         loadDashboardData();
     </script>
 </body>
