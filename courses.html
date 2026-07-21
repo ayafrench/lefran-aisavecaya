@@ -132,7 +132,7 @@
             <!-- بوابة إدخال البيانات -->
             <div id="studentGateArea"></div>
 
-            <!-- منطقة الامتحانات -->
+            <!-- منطقة الامتحانات (مخفية في البداية) -->
             <div id="fpQuestionsArea" style="display: none;"></div>
             
             <!-- منطقة النتيجة والشهادة -->
@@ -296,7 +296,9 @@
                                                     });
 
                                                     if (percentage >= 70) {
-                                                        // رسم الشهادة الفرنسية الكلاسيكية
+                                                        // -----------------------------------------------------
+                                                        // بداية كود رسم الشهادة الفخمة مع الصورة
+                                                        // -----------------------------------------------------
                                                         const canvas = document.createElement("canvas");
                                                         canvas.width = 1000; canvas.height = 700;
                                                         const ctx = canvas.getContext("2d");
@@ -323,63 +325,97 @@
                                                         ctx.fillRect(45, canvas.height - 51, 40, 6); ctx.fillRect(45, canvas.height - 85, 6, 40);
                                                         ctx.fillRect(canvas.width - 85, canvas.height - 51, 40, 6); ctx.fillRect(canvas.width - 51, canvas.height - 85, 6, 40);
 
-                                                        // نصوص الشهادة الفرنسية الكلاسيكية
+                                                        // توزيع النصوص لترك مساحة للصورة في الأسفل
                                                         ctx.textAlign = "center";
                                                         
-                                                        // اسم المنصة
-                                                        ctx.font = "italic 35px 'Georgia', 'Times New Roman', serif"; ctx.fillStyle = "#d4af37";
-                                                        ctx.fillText("Le Français avec Madame Aya", canvas.width / 2, 130);
+                                                        // العنوان الفرعي
+                                                        ctx.font = "italic 32px 'Georgia', 'Times New Roman', serif"; ctx.fillStyle = "#d4af37";
+                                                        ctx.fillText("Le Français avec Madame Aya", canvas.width / 2, 120);
 
                                                         // العنوان الرئيسي
                                                         ctx.font = "bold 65px 'Georgia', 'Times New Roman', serif"; ctx.fillStyle = "#1a365d";
-                                                        ctx.fillText("CERTIFICAT DE RÉUSSITE", canvas.width / 2, 220);
+                                                        ctx.fillText("CERTIFICAT DE RÉUSSITE", canvas.width / 2, 200);
                                                         
-                                                        // خط فاصل زخرفي بسيط
-                                                        ctx.beginPath(); ctx.moveTo(canvas.width/2 - 150, 250); ctx.lineTo(canvas.width/2 + 150, 250);
+                                                        // خط فاصل زخرفي
+                                                        ctx.beginPath(); ctx.moveTo(canvas.width/2 - 150, 230); ctx.lineTo(canvas.width/2 + 150, 230);
                                                         ctx.strokeStyle = "#d4af37"; ctx.lineWidth = 2; ctx.stroke();
 
+                                                        // مهداة إلى
                                                         ctx.font = "italic 28px 'Georgia', 'Times New Roman', serif"; ctx.fillStyle = "#4a5568";
-                                                        ctx.fillText("Décerné avec fierté à :", canvas.width / 2, 310);
+                                                        ctx.fillText("Décerné avec fierté à :", canvas.width / 2, 280);
 
                                                         // اسم الطالب
-                                                        ctx.font = "bold 70px 'Georgia', 'Times New Roman', serif"; ctx.fillStyle = "#e53e3e";
-                                                        ctx.fillText(finalName, canvas.width / 2, 395);
+                                                        ctx.font = "bold 65px 'Georgia', 'Times New Roman', serif"; ctx.fillStyle = "#e53e3e";
+                                                        ctx.fillText(finalName, canvas.width / 2, 350);
 
-                                                        ctx.font = "italic 28px 'Georgia', 'Times New Roman', serif"; ctx.fillStyle = "#4a5568";
-                                                        ctx.fillText("Pour avoir suivi et validé avec succès le cours :", canvas.width / 2, 480);
+                                                        // النص الفرنسي لإتمام الكورس
+                                                        ctx.font = "italic 26px 'Georgia', 'Times New Roman', serif"; ctx.fillStyle = "#4a5568";
+                                                        ctx.fillText("Pour avoir suivi et validé avec succès le cours :", canvas.width / 2, 420);
 
                                                         // اسم الكورس
-                                                        ctx.font = "bold 40px 'Georgia', 'Times New Roman', serif"; ctx.fillStyle = "#2b6cb0";
-                                                        ctx.fillText(data.title, canvas.width / 2, 545);
+                                                        ctx.font = "bold 38px 'Georgia', 'Times New Roman', serif"; ctx.fillStyle = "#2b6cb0";
+                                                        ctx.fillText(data.title, canvas.width / 2, 470);
 
-                                                        // التوقيع والتاريخ
-                                                        const today = new Date().toLocaleDateString('fr-FR');
-                                                        ctx.font = "bold 24px 'Georgia', 'Times New Roman', serif"; ctx.fillStyle = "#1a365d";
-                                                        ctx.textAlign = "left";
-                                                        ctx.fillText("Professeure : Madame Aya Wael", 100, 640);
-                                                        ctx.textAlign = "right";
-                                                        ctx.fillText("Date : " + today, canvas.width - 100, 640);
+                                                        // دالة لاستكمال عرض الشهادة وإرسال الإيميل
+                                                        const finalizeAndShow = (finalCertData) => {
+                                                            emailjs.init("UiYPZxZVHrQIg8xQq"); 
+                                                            const templateParams = {
+                                                                to_name: finalName, 
+                                                                to_email: finalEmail, 
+                                                                lesson_name: data.title,
+                                                                student_score: currentScore + " / " + totalQs
+                                                            };
+                                                            emailjs.send("service_i5eekp6", "template_6hd8s0v", templateParams).catch(err => console.log(err));
 
-                                                        const finalCertificate = canvas.toDataURL("image/jpeg", 0.9);
-
-                                                        emailjs.init("UiYPZxZVHrQIg8xQq"); 
-                                                        const templateParams = {
-                                                            to_name: finalName, 
-                                                            to_email: finalEmail, 
-                                                            lesson_name: data.title,
-                                                            student_score: currentScore + " / " + totalQs
+                                                            resArea.innerHTML = `
+                                                                <div style="text-align: center; margin-top: 40px; background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-top: 5px solid #27ae60;">
+                                                                    <h2 style="color:#27ae60; font-size: 32px; margin-bottom: 15px; font-weight: 900;">Félicitations ! (النتيجة: ${Math.round(percentage)}%) 🎉</h2>
+                                                                    <p style="font-size: 18px; color:#555; margin-bottom:20px;">تم إرسال نتيجتك لبريدك الإلكتروني. تفضل شهادة التفوق الخاصة بك:</p>
+                                                                    <img src="${finalCertData}" style="max-width: 100%; border-radius: 10px; border: 5px solid #1a365d; box-shadow: 0 15px 30px rgba(0,0,0,0.2); margin-bottom: 20px;">
+                                                                    <br>
+                                                                    <a href="${finalCertData}" download="Certificat_${finalName}.jpg" style="background: linear-gradient(135deg, #1a365d, #2b6cb0); color:white; padding:15px 35px; font-size: 20px; border-radius:10px; text-decoration:none; font-weight:bold; display:inline-block; box-shadow: 0 5px 15px rgba(43, 108, 176, 0.4); transition: 0.3s;">📥 Télécharger le certificat</a>
+                                                                </div>
+                                                            `;
+                                                            resArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
                                                         };
-                                                        emailjs.send("service_i5eekp6", "template_6hd8s0v", templateParams).catch(err => console.log(err));
 
-                                                        resArea.innerHTML = `
-                                                            <div style="text-align: center; margin-top: 40px; background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-top: 5px solid #27ae60;">
-                                                                <h2 style="color:#27ae60; font-size: 32px; margin-bottom: 15px; font-weight: 900;">Félicitations ! (النتيجة: ${Math.round(percentage)}%) 🎉</h2>
-                                                                <p style="font-size: 18px; color:#555; margin-bottom:20px;">تم إرسال نتيجتك لبريدك الإلكتروني. تفضل شهادة التفوق الخاصة بك:</p>
-                                                                <img src="${finalCertificate}" style="max-width: 100%; border-radius: 10px; border: 5px solid #1a365d; box-shadow: 0 15px 30px rgba(0,0,0,0.2); margin-bottom: 20px;">
-                                                                <br>
-                                                                <a href="${finalCertificate}" download="Certificat_${finalName}.jpg" style="background: linear-gradient(135deg, #1a365d, #2b6cb0); color:white; padding:15px 35px; font-size: 20px; border-radius:10px; text-decoration:none; font-weight:bold; display:inline-block; box-shadow: 0 5px 15px rgba(43, 108, 176, 0.4); transition: 0.3s;">📥 Télécharger le certificat</a>
-                                                            </div>
-                                                        `;
+                                                        // تحميل صورة preview.png ورسمها
+                                                        const sealImg = new Image();
+                                                        sealImg.src = 'preview.png';
+                                                        
+                                                        sealImg.onload = () => {
+                                                            // رسم الصورة في منتصف الشهادة بالأسفل
+                                                            ctx.drawImage(sealImg, canvas.width / 2 - 90, 485, 180, 180);
+
+                                                            // إضافة التاريخ على اليسار
+                                                            const today = new Date().toLocaleDateString('fr-FR');
+                                                            ctx.font = "bold 22px 'Georgia', 'Times New Roman', serif"; ctx.fillStyle = "#1a365d";
+                                                            ctx.textAlign = "left";
+                                                            ctx.fillText("Date : " + today, 100, 600);
+                                                            
+                                                            // إضافة كلمة Professeure على اليمين (لأن الصورة هي التوقيع)
+                                                            ctx.textAlign = "right";
+                                                            ctx.fillText("Professeure :", canvas.width - 100, 580);
+                                                            ctx.font = "italic 20px 'Georgia', 'Times New Roman', serif";
+                                                            ctx.fillText("Madame Aya Wael", canvas.width - 100, 615);
+
+                                                            const finalCertificate = canvas.toDataURL("image/jpeg", 0.9);
+                                                            finalizeAndShow(finalCertificate);
+                                                        };
+
+                                                        // في حال لم يتم العثور على الصورة، نرسم الشهادة بنصوص فقط
+                                                        sealImg.onerror = () => {
+                                                            const today = new Date().toLocaleDateString('fr-FR');
+                                                            ctx.font = "bold 24px 'Georgia', 'Times New Roman', serif"; ctx.fillStyle = "#1a365d";
+                                                            ctx.textAlign = "left";
+                                                            ctx.fillText("Date : " + today, 100, 600);
+                                                            ctx.textAlign = "right";
+                                                            ctx.fillText("Professeure : Madame Aya Wael", canvas.width - 100, 600);
+
+                                                            const finalCertificate = canvas.toDataURL("image/jpeg", 0.9);
+                                                            finalizeAndShow(finalCertificate);
+                                                        };
+
                                                     } else {
                                                         resArea.innerHTML = `
                                                             <div style="text-align: center; margin-top: 40px; background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-top: 5px solid #e74c3c;">
@@ -388,8 +424,8 @@
                                                                 <p style="font-size: 18px; color:#7f8c8d; margin-top:10px;">للحصول على الشهادة يجب أن تكون نسبة إجاباتك الصحيحة 70% أو أكثر. شاهد الفيديو بتركيز وجرب الاختبار مرة ثانية.</p>
                                                             </div>
                                                         `;
+                                                        resArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
                                                     }
-                                                    resArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
                                                 }
                                             };
                                             optsBox.appendChild(btn);
