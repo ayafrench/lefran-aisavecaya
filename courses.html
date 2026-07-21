@@ -300,22 +300,20 @@
                                                         canvas.width = 1000; canvas.height = 700;
                                                         const ctx = canvas.getContext("2d");
 
-                                                        // خلفية מתدرجة راقية
+                                                        // خلفية الشهادة
                                                         const grd = ctx.createLinearGradient(0, 0, 1000, 700);
                                                         grd.addColorStop(0, "#ffffff");
                                                         grd.addColorStop(1, "#f4f7f9");
                                                         ctx.fillStyle = grd;
                                                         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-                                                        // إطار خارجي كحلي سميك
+                                                        // الإطارات
                                                         ctx.strokeStyle = "#1a365d"; ctx.lineWidth = 15; 
                                                         ctx.strokeRect(30, 30, canvas.width - 60, canvas.height - 60);
-
-                                                        // إطار داخلي ذهبي رفيع
                                                         ctx.strokeStyle = "#d4af37"; ctx.lineWidth = 4; 
                                                         ctx.strokeRect(55, 55, canvas.width - 110, canvas.height - 110);
                                                         
-                                                        // لمسات أركان ذهبية
+                                                        // الأركان
                                                         ctx.fillStyle = "#d4af37";
                                                         ctx.fillRect(45, 45, 40, 6); ctx.fillRect(45, 45, 6, 40);
                                                         ctx.fillRect(canvas.width - 85, 45, 40, 6); ctx.fillRect(canvas.width - 51, 45, 6, 40);
@@ -324,33 +322,33 @@
 
                                                         ctx.textAlign = "center";
                                                         
-                                                        // العنوان الفرعي
+                                                        // عنوان الموقع
                                                         ctx.font = "italic 32px 'Georgia', 'Times New Roman', serif"; ctx.fillStyle = "#d4af37";
                                                         ctx.fillText("Le Français avec Madame Aya", canvas.width / 2, 120);
 
-                                                        // العنوان الرئيسي (تم التصغير وإضافة حد أقصى للعرض)
-                                                        ctx.font = "bold 45px 'Georgia', 'Times New Roman', serif"; ctx.fillStyle = "#1a365d";
-                                                        ctx.fillText("CERTIFICAT DE RÉUSSITE", canvas.width / 2, 200, 800);
+                                                        // العنوان الرئيسي (تم التصغير والحد الأقصى للعرض)
+                                                        ctx.font = "bold 42px 'Georgia', 'Times New Roman', serif"; ctx.fillStyle = "#1a365d";
+                                                        ctx.fillText("CERTIFICAT DE RÉUSSITE", canvas.width / 2, 200, 750);
                                                         
-                                                        // خط فاصل زخرفي
+                                                        // خط فاصل
                                                         ctx.beginPath(); ctx.moveTo(canvas.width/2 - 150, 230); ctx.lineTo(canvas.width/2 + 150, 230);
                                                         ctx.strokeStyle = "#d4af37"; ctx.lineWidth = 2; ctx.stroke();
 
                                                         // مهداة إلى
-                                                        ctx.font = "italic 28px 'Georgia', 'Times New Roman', serif"; ctx.fillStyle = "#4a5568";
+                                                        ctx.font = "italic 26px 'Georgia', 'Times New Roman', serif"; ctx.fillStyle = "#4a5568";
                                                         ctx.fillText("Décerné avec fierté à :", canvas.width / 2, 280);
 
-                                                        // اسم الطالب (تم إضافة حد أقصى للعرض)
-                                                        ctx.font = "bold 60px 'Georgia', 'Times New Roman', serif"; ctx.fillStyle = "#e53e3e";
-                                                        ctx.fillText(finalName, canvas.width / 2, 350, 800);
+                                                        // اسم الطالب (استخدام خط Cairo لدعم العربية بشكل احترافي مع حد أقصى)
+                                                        ctx.font = "bold 60px 'Cairo', sans-serif"; ctx.fillStyle = "#e53e3e";
+                                                        ctx.fillText(finalName, canvas.width / 2, 350, 750);
 
                                                         // النص الفرنسي
-                                                        ctx.font = "italic 26px 'Georgia', 'Times New Roman', serif"; ctx.fillStyle = "#4a5568";
+                                                        ctx.font = "italic 24px 'Georgia', 'Times New Roman', serif"; ctx.fillStyle = "#4a5568";
                                                         ctx.fillText("Pour avoir suivi et validé avec succès le cours :", canvas.width / 2, 420);
 
-                                                        // اسم الكورس (تم إضافة حد أقصى للعرض)
-                                                        ctx.font = "bold 38px 'Georgia', 'Times New Roman', serif"; ctx.fillStyle = "#2b6cb0";
-                                                        ctx.fillText(data.title, canvas.width / 2, 470, 800);
+                                                        // اسم الكورس (استخدام Cairo كخط أساسي لتجنب تقطيع الحروف العربية مع حد أقصى)
+                                                        ctx.font = "bold 38px 'Cairo', sans-serif"; ctx.fillStyle = "#2b6cb0";
+                                                        ctx.fillText(data.title, canvas.width / 2, 470, 750);
 
                                                         const finalizeAndShow = (finalCertData) => {
                                                             emailjs.init("UiYPZxZVHrQIg8xQq"); 
@@ -374,7 +372,7 @@
                                                             resArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
                                                         };
 
-                                                        // تحميل صورة preview.png ورسمها
+                                                        // إضافة الصورة والتواريخ
                                                         const sealImg = new Image();
                                                         sealImg.src = 'preview.png';
                                                         
